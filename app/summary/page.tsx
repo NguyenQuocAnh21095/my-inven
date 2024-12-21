@@ -16,8 +16,8 @@ export default async function Page(props: {
 {
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
-    const startDate = searchParams?.startDate || '';
-    const endDate = searchParams?.endDate || '';
+    const startDate = searchParams?.startDate || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    const endDate = searchParams?.endDate || new Date().toISOString().split('T')[0];
     // const currentPage = Number(searchParams?.page) || 1;
     // const totalPages = await fetchInvoicesPages(query);
     console.log(searchParams);

@@ -45,7 +45,9 @@ export async function fetchHistory(query: string, startDate: string, endDate: st
         JOIN items i ON ih.itemid = i.id
         JOIN agents a ON a.id = ih.agentid
         WHERE (a.agent ILIKE '%' || ${query} || '%' OR ${query} = '')
-        AND ih.createat BETWEEN ${startDate} AND ${endDate}
+        AND ih.createat >= ${startDate}
+        AND ih.createat <= ${endDate}
+       
         `;
         return data.rows;
     } catch (error) {

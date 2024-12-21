@@ -14,8 +14,9 @@ export default function FilterBar() {
     const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState<string>('');
     const [startDate, setStartDate] = useState<Date>(() => {
-        const today = new Date();
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        // const today = new Date();
+        // const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const firstDayOfMonth = new Date(new Date().getFullYear(), 0, 1);
         firstDayOfMonth.setHours(firstDayOfMonth.getHours() + 7);
         console.log(firstDayOfMonth);
         return firstDayOfMonth;
