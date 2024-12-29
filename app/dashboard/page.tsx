@@ -25,10 +25,11 @@ export default async function Page(props: {
                 <h1 className="text-2xl">Items</h1>
             </div>
             <div className="mt-2 flex items-center justify-between gap-2 md:mt-8">
-                <Search placeholder="Search invoices..." />
+                <Search placeholder="Search invoices..."/>
                 {/*<CreateInvoice />*/}
             </div>
-            <Suspense key={query} fallback={<Skeleton />}>
+            <div>Chọn vật phẩm để vào trang chi tiết!</div>
+            <Suspense key={query} fallback={<Skeleton/>}>
                 <InvoicesTable query={query}/>
             </Suspense>
             {/*<div className="mt-5 flex w-full justify-center">*/}

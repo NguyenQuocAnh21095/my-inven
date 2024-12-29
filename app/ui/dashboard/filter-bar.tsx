@@ -78,7 +78,7 @@ export default function FilterBar() {
         <div className="flex flex-1 justify-between items-center bg-green-500 rounded-md py-[9px] px-4 text-black">
             <div className="flex flex-1 justify-start">
                 <select
-                    className="rounded-md"
+                    className="rounded-md bg-white"
                     id="agents"
                     value={selectedValue}
                     onChange={(e) => {
