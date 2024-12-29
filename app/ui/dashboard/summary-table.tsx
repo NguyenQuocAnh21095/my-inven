@@ -11,7 +11,7 @@ export default async function SummaryTable({agentId, startDate, endDate}:{
     return (
         <div className="mt-3 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+                <div className="rounded-lg bg-gray-100 p-2 md:pt-0">
                     <div className="max-h-[60vh] overflow-y-auto">
                         {items?.map((item) => (
                             <div

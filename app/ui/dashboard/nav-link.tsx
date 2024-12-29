@@ -38,7 +38,12 @@ export default function NavLinks() {
                             },
                         )}
                     >
-                        <LinkIcon className="w-6" />
+                        <LinkIcon className={clsx(
+                            'w-6 text-black hover:bg-green-600 hover:text-white',
+                            {
+                                'bg-green-600 text-white': pathname === link.href,
+                            },
+                        )} />
                         <p className="hidden md:block">{link.name}</p>
                     </Link>
                 );

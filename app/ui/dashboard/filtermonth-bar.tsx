@@ -80,7 +80,7 @@ export default function FilterMonthBar() {
     }, [startDate, endDate, pathname, searchParams, replace]);
 
     return (
-        <div className="flex flex-1 justify-between items-center bg-green-500 rounded-md py-[9px] px-4">
+        <div className="flex flex-1 justify-between items-center bg-green-500 rounded-md py-[9px] px-4 text-black">
             <div className="flex flex-1 justify-start">
                 <select
                     className="rounded-md"
