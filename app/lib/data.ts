@@ -91,52 +91,63 @@ export async function fetchHistory(query: string, startDate: string, endDate: st
     }
 }
 
-// lấy item detail history
+// Lấy item detail history
 export async function fetchHistoryById(
     id: string,
-    agent: string = 'all', // tham số cho agent, mặc định là 'all'
+    agent: string = 'All agents', // tham số cho agent, mặc định là 'All agents'
     startDate: string, // tham số cho startDate
     endDate: string // tham số cho endDate
 ) {
     try {
         let data;
 
-        if (agent === 'all') {
+        if (agent === 'All agents') {
             data = await sql`
-        SELECT
-          ih.id,
-          'All agents' as agent,
-          volume,
-          inbound,
-          outsup,
-          createat
-        FROM itemhistory ih
-        LEFT JOIN agents a ON ih.agentid = a.id
-        WHERE ih.itemid = ${id}
-          AND ih.createat BETWEEN ${startDate} AND ${endDate}
-        ORDER BY createat DESC
-      `;
+                SELECT
+                    ih.id,
+                    'All agents' as agent,
+                    volume,
+                    inbound,
+                    outsup,
+                    createat
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+                ORDER BY createat DESC
+            `;
+        } else if (agent === 'No Agent') {
+            data = await sql`
+                SELECT
+                    ih.id,
+                    'No Agent' as agent,
+                    volume,
+                    inbound,
+                    outsup,
+                    createat
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND a.agent IS NULL
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+                ORDER BY createat DESC
+            `;
         } else {
             data = await sql`
-        SELECT
-          ih.id,
-          CASE 
-            WHEN a.agent IS NULL THEN 'No Agent'
-            ELSE a.agent
-          END AS agent,
-          volume,
-          inbound,
-          outsup,
-          createat
-        FROM itemhistory ih
-        LEFT JOIN agents a ON ih.agentid = a.id
-        WHERE ih.itemid = ${id}
-          AND (
-            a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL)
-          )
-          AND ih.createat BETWEEN ${startDate} AND ${endDate}
-        ORDER BY createat DESC
-      `;
+                SELECT
+                    ih.id,
+                    COALESCE(a.agent, 'No Agent') AS agent,
+                    volume,
+                    inbound,
+                    outsup,
+                    createat
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND a.agent = ${agent}
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+                ORDER BY createat DESC
+            `;
         }
 
         return data.rows;
@@ -146,46 +157,55 @@ export async function fetchHistoryById(
     }
 }
 
+
+
 // Dùng để lấy Tổng nhập xuất theo agent, ngày cho phần header
 export async function fetchCurrentInOutById(
     id: string,
-    agent: string = 'all', // tham số cho agent, mặc định là 'all'
+    agent: string = 'All agents', // tham số cho agent, mặc định là 'All agents'
     startDate: string, // tham số cho startDate
     endDate: string // tham số cho endDate
 ) {
     try {
         let data;
 
-        if (agent === 'all') {
+        if (agent === 'All agents') {
             data = await sql`
-        SELECT
-          'All agents' as agent,
-          SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
-          SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
-        FROM itemhistory ih
-        LEFT JOIN agents a ON ih.agentid = a.id
-        WHERE ih.itemid = ${id}
-          AND ih.createat BETWEEN ${startDate} AND ${endDate}
-      `;
+                SELECT
+                    'All agents' as agent,
+                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
+                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+            `;
+        } else if (agent === 'No Agent') {
+            data = await sql`
+                SELECT
+                    'No Agent' as agent,
+                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
+                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND a.agent IS NULL
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+            `;
         } else {
             data = await sql`
-        SELECT
-          CASE 
-            WHEN a.agent IS NULL THEN 'No Agent'
-            ELSE a.agent
-          END AS agent,
-          SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
-          SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
-        FROM itemhistory ih
-        LEFT JOIN agents a ON ih.agentid = a.id
-        WHERE ih.itemid = ${id}
-          AND (
-            a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL)
-          )
-          AND ih.createat BETWEEN ${startDate} AND ${endDate}
-        GROUP BY a.agent
-        ORDER BY agent
-      `;
+                SELECT
+                    COALESCE(a.agent, 'No Agent') AS agent,
+                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
+                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
+                FROM itemhistory ih
+                LEFT JOIN agents a ON ih.agentid = a.id
+                WHERE ih.itemid = ${id}
+                AND a.agent = ${agent}
+                AND ih.createat BETWEEN ${startDate} AND ${endDate}
+                GROUP BY a.agent
+                ORDER BY agent
+            `;
         }
 
         return data.rows;
@@ -194,6 +214,7 @@ export async function fetchCurrentInOutById(
         throw new Error('Failed to fetch item current volume by Id.');
     }
 }
+
 
 
 export async function fetchSummary(

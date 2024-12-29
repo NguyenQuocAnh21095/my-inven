@@ -19,16 +19,17 @@ export default async function SummaryTable({agentId, startDate, endDate}:{
                                 className={clsx(
                                     "mb-2 w-full rounded-md p-4 flex justify-between text-black",
                                     {
-                                        'bg-green-400': item.inbound,
+                                        'bg-white': item.inbound,
                                         'bg-yellow-400': item.outsup,
-                                        'bg-white': !item.inbound && !item.outsup,
+                                        'bg-white text-red-500': !item.inbound && !item.outsup,
                                     }
                                 )}
                             >
-                                {item.name} - SL: {item.total_volume}<br/>
-                                Đơn Giá: {formatCurrency(item.unitprice)}
+                                <strong>{item.name}</strong>
+                                SL: {item.total_volume}<br/>
+                                ĐG: {formatCurrency(item.unitprice)}
                                 <div>
-                                    Tháng: {formatDateToLocal(item.month).slice(3,10)}<br/>
+                                    T: {formatDateToLocal(item.month).slice(3,10)}<br/>
                                     TT: {formatCurrency(item.unitprice * item.total_volume)}
                                 </div>
                             </div>

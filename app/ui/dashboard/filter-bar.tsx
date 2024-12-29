@@ -13,20 +13,22 @@ export default function FilterBar() {
 
     const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState<string>('');
-    const [startDate, setStartDate] = useState<Date>(() => {
-        // const today = new Date();
-        // const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const firstDayOfMonth = new Date(new Date().getFullYear(), 10, 1);
-        firstDayOfMonth.setHours(firstDayOfMonth.getHours() + 7);
-        console.log(firstDayOfMonth);
-        return firstDayOfMonth;
-    })
-    const [endDate, setEndDate] = useState<Date>(()=> {
-        const today = new Date();
-        today.setHours(today.getHours() + 7);
-        console.log(today);
-        return today;
-    });
+
+    // Hàm tính toán đầu tháng và cuối tháng hiện tại
+    const getDefaultDates = () => {
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        startOfMonth.setHours(startOfMonth.getHours() + 7); // Cộng thêm 7 giờ
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        endOfMonth.setHours(endOfMonth.getHours() + 7); // Cộng thêm 7 giờ
+
+        return { startOfMonth, endOfMonth };
+    };
+
+    // Sử dụng hàm tính toán để khởi tạo state
+    const { startOfMonth, endOfMonth } = getDefaultDates();
+    const [startDate, setStartDate] = useState<Date | undefined>(startOfMonth);
+    const [endDate, setEndDate] = useState<Date | undefined>(endOfMonth);
 
 
     const handleChange = (value: string) => {
@@ -34,7 +36,7 @@ export default function FilterBar() {
         const newSearchParams = new URLSearchParams(searchParams.toString());
 
         if (value) {
-            newSearchParams.set('query', value); // Cập nhật query param
+            newSearchParams.set('agent', value); // Cập nhật query param
             replace(`${pathname}?${newSearchParams.toString()}`);
         } else {
             replace(`${pathname}`);
@@ -84,7 +86,7 @@ export default function FilterBar() {
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}>
-                    <option value="all">All Agent</option>
+                    <option value="All agents">All Agents</option>
                     {options?.map((option: Agent) => (
                         <option key={option.id} value={option.agent}>
                             {option.agent}
@@ -92,7 +94,6 @@ export default function FilterBar() {
                     ))}
                     <option value="No Agent">No Agent</option>
                 </select>
-                {/*<p>Selected Agent: {selectedValue}</p>*/}
             </div>
             <div className="flex flex-1 justify-end">
                 <DatePicker
@@ -105,13 +106,19 @@ export default function FilterBar() {
                         if (start){
                             start.setHours(start.getHours()+7);
                             setStartDate(start);
-                        };
+                        }else {
+                            setStartDate(undefined);
+                        }
                         if (end) {
                             end.setHours(end.getHours()+7);
                             setEndDate(end);
-                        };
+                        }  else {
+                            setEndDate(undefined);
+                        }
                     }}
                     isClearable
+                    customInput={<input type="text" className="rounded-md" readOnly />}
+                    dateFormat="dd/MM/yyyy"
                 />
             </div>
         </div>

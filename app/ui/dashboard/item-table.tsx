@@ -12,10 +12,11 @@ export default async function InvoicesTable({ query}: { query: string}) {
                         {items?.map((item) => (
                             <div
                                 key={item.id}
-                                className="mb-2 w-full rounded-md bg-white p-4 text-black"
+                                className="flex mb-2 w-full rounded-md bg-white p-4 text-black"
                             >
                                 <Link href={`/dashboard/${item.id}`}>
-                                {item.name} - Đơn giá: {item.unitprice}
+                                    <strong>{item.name}</strong>
+                                    <div>Đơn giá: {item.unitprice}</div>
                                 </Link>
                             </div>
                         ))}

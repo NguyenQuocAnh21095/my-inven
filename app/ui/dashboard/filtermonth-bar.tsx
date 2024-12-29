@@ -123,6 +123,7 @@ export default function FilterMonthBar() {
                             }
                         }}
                         isClearable
+                        customInput={<input type="text" className="rounded-md" readOnly />}
                         showMonthYearPicker
                         dateFormat="MM/yyyy"
                     />

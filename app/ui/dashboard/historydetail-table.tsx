@@ -18,15 +18,18 @@ export default async function HistoryDetailTable({id, agentId, startDate, endDat
                             <div
                                 key={item.id}
                                 className={clsx(
-                                    "mb-2 w-full rounded-md p-4 text-black",
+                                    "mb-2 w-full rounded-md p-4 flex justify-between text-black",
                                     {
-                                        'bg-green-400': item.inbound,
+                                        'bg-white': item.inbound,
                                         'bg-yellow-400': item.outsup,
-                                        'bg-white': !item.inbound && !item.outsup,
+                                        'bg-white text-red-500': !item.inbound && !item.outsup,
                                     }
                                 )}
                             >
-                                SL: {item.volume} - Ngày: {formatDateToLocal(item.createat)}
+                                <div className="flex justify-between w-full">
+                                    <strong>{item.inbound ? 'Nhập' : 'Xuất'}: {item.volume}</strong>
+                                    <div>Ngày: {formatDateToLocal(item.createat)}</div>
+                                </div>
                             </div>
                         ))}
                     </div>
