@@ -2,6 +2,8 @@ import {fetchHistory} from '@/app/lib/data';
 import {formatDateToLocal} from "@/app/lib/utils";
 import clsx from 'clsx';
 
+
+// Hiện tại không xài bảng này
 export default async function HistoryTable({ query, start, end}: { query: string, start: string, end: string }) {
     const items = await fetchHistory(query,start,end);
 

@@ -4,39 +4,41 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {Agent} from "@/app/lib/definitions";
+import { Agent } from "@/app/lib/definitions";
 
-export default function FilterBar() {
+export default function FilterMonthBar() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
 
     const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState<string>('');
-    const [startDate, setStartDate] = useState<Date>(() => {
-        // const today = new Date();
-        // const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const firstDayOfMonth = new Date(new Date().getFullYear(), 10, 1);
-        firstDayOfMonth.setHours(firstDayOfMonth.getHours() + 7);
-        console.log(firstDayOfMonth);
-        return firstDayOfMonth;
-    })
-    const [endDate, setEndDate] = useState<Date>(()=> {
-        const today = new Date();
-        today.setHours(today.getHours() + 7);
-        console.log(today);
-        return today;
-    });
 
+    // Hàm tính toán đầu tháng và cuối tháng hiện tại
+    const getDefaultDates = () => {
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        startOfMonth.setHours(startOfMonth.getHours() + 7); // Cộng thêm 7 giờ
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        endOfMonth.setHours(endOfMonth.getHours() + 7); // Cộng thêm 7 giờ
+
+        return { startOfMonth, endOfMonth };
+    };
+
+    // Sử dụng hàm tính toán để khởi tạo state
+    const { startOfMonth, endOfMonth } = getDefaultDates();
+    const [startDate, setStartDate] = useState<Date | undefined>(startOfMonth);
+    const [endDate, setEndDate] = useState<Date | undefined>(endOfMonth);
 
     const handleChange = (value: string) => {
         setSelectedValue(value);
         const newSearchParams = new URLSearchParams(searchParams.toString());
 
         if (value) {
-            newSearchParams.set('query', value); // Cập nhật query param
+            newSearchParams.set('agent', value); // Cập nhật query param
             replace(`${pathname}?${newSearchParams.toString()}`);
         } else {
+            newSearchParams.delete('agent');
             replace(`${pathname}`);
         }
     };
@@ -63,11 +65,14 @@ export default function FilterBar() {
 
         if (startDate) {
             newSearchParams.set('startDate', startDate.toISOString().split('T')[0]);
-            console.log(startDate);
+        } else {
+            newSearchParams.delete('startDate');
         }
 
         if (endDate) {
             newSearchParams.set('endDate', endDate.toISOString().split('T')[0]);
+        } else {
+            newSearchParams.delete('endDate');
         }
 
         // Cập nhật URL với các tham số ngày
@@ -84,7 +89,7 @@ export default function FilterBar() {
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}>
-                    <option value="all">All Agent</option>
+                    <option value="All agents">All Agent</option>
                     {options?.map((option: Agent) => (
                         <option key={option.id} value={option.agent}>
                             {option.agent}
@@ -95,24 +100,32 @@ export default function FilterBar() {
                 {/*<p>Selected Agent: {selectedValue}</p>*/}
             </div>
             <div className="flex flex-1 justify-end">
-                <DatePicker
-                    className="rounded-md"
-                    selectsRange
-                    startDate={startDate}
-                    endDate={endDate}
-                    onChange={(dates) => {
-                        const [start, end] = dates;
-                        if (start){
-                            start.setHours(start.getHours()+7);
-                            setStartDate(start);
-                        };
-                        if (end) {
-                            end.setHours(end.getHours()+7);
-                            setEndDate(end);
-                        };
-                    }}
-                    isClearable
-                />
+                    <DatePicker
+                        className="rounded-md"
+                        selectsRange
+                        startDate={startDate}
+                        endDate={endDate}
+                        onChange={(dates: [Date | null, Date | null]) => {
+                            const [start, end] = dates;
+                            if (start) {
+                                start.setHours(start.getHours() + 7);
+                                setStartDate(start);
+                            } else {
+                                setStartDate(undefined);
+                            }
+                            if (end) {
+                                // Tính toán ngày cuối cùng của tháng của ngày kết thúc đã chọn
+                                const endMonth = new Date(end.getFullYear(), end.getMonth() + 1, 0);
+                                endMonth.setHours(endMonth.getHours() + 7);
+                                setEndDate(endMonth);
+                            } else {
+                                setEndDate(undefined);
+                            }
+                        }}
+                        isClearable
+                        showMonthYearPicker
+                        dateFormat="MM/yyyy"
+                    />
             </div>
         </div>
     );

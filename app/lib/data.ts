@@ -91,21 +91,54 @@ export async function fetchHistory(query: string, startDate: string, endDate: st
     }
 }
 
-export async function fetchHistoryById(id:string) {
+// lấy item detail history
+export async function fetchHistoryById(
+    id: string,
+    agent: string = 'all', // tham số cho agent, mặc định là 'all'
+    startDate: string, // tham số cho startDate
+    endDate: string // tham số cho endDate
+) {
     try {
-        const data = await sql`
-            SELECT
-              ih.id,
-              a.agent,
-              volume,
-              inbound,
-              outsup,
-              createat
-            FROM itemhistory ih
-            LEFT JOIN agents a ON ih.agentid = a.id
-            WHERE itemid = ${id}
-            ORDER BY createat desc
-        `;
+        let data;
+
+        if (agent === 'all') {
+            data = await sql`
+        SELECT
+          ih.id,
+          'All agents' as agent,
+          volume,
+          inbound,
+          outsup,
+          createat
+        FROM itemhistory ih
+        LEFT JOIN agents a ON ih.agentid = a.id
+        WHERE ih.itemid = ${id}
+          AND ih.createat BETWEEN ${startDate} AND ${endDate}
+        ORDER BY createat DESC
+      `;
+        } else {
+            data = await sql`
+        SELECT
+          ih.id,
+          CASE 
+            WHEN a.agent IS NULL THEN 'No Agent'
+            ELSE a.agent
+          END AS agent,
+          volume,
+          inbound,
+          outsup,
+          createat
+        FROM itemhistory ih
+        LEFT JOIN agents a ON ih.agentid = a.id
+        WHERE ih.itemid = ${id}
+          AND (
+            a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL)
+          )
+          AND ih.createat BETWEEN ${startDate} AND ${endDate}
+        ORDER BY createat DESC
+      `;
+        }
+
         return data.rows;
     } catch (error) {
         console.error('Database Error:', error);
@@ -113,15 +146,18 @@ export async function fetchHistoryById(id:string) {
     }
 }
 
+// Dùng để lấy Tổng nhập xuất theo agent, ngày cho phần header
 export async function fetchCurrentInOutById(
     id: string,
-    agent: string = 'all',  // tham số cho agent, mặc định là rỗng
-    startDate: string,   // tham số cho startDate
-    endDate: string      // tham số cho endDate
+    agent: string = 'all', // tham số cho agent, mặc định là 'all'
+    startDate: string, // tham số cho startDate
+    endDate: string // tham số cho endDate
 ) {
     try {
-        if (agent === 'all'){
-            const data = await sql`
+        let data;
+
+        if (agent === 'all') {
+            data = await sql`
         SELECT
           'All agents' as agent,
           SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
@@ -130,21 +166,28 @@ export async function fetchCurrentInOutById(
         LEFT JOIN agents a ON ih.agentid = a.id
         WHERE ih.itemid = ${id}
           AND ih.createat BETWEEN ${startDate} AND ${endDate}
-        `;
-            return data.rows;
-        }
-        const data = await sql`
+      `;
+        } else {
+            data = await sql`
         SELECT
-          COALESCE(a.agent, 'No Agent') AS agent,
+          CASE 
+            WHEN a.agent IS NULL THEN 'No Agent'
+            ELSE a.agent
+          END AS agent,
           SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
           SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
         FROM itemhistory ih
         LEFT JOIN agents a ON ih.agentid = a.id
         WHERE ih.itemid = ${id}
-          AND a.agent = ${agent}
+          AND (
+            a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL)
+          )
           AND ih.createat BETWEEN ${startDate} AND ${endDate}
         GROUP BY a.agent
-        `;
+        ORDER BY agent
+      `;
+        }
+
         return data.rows;
     } catch (error) {
         console.error('Database Error:', error);
@@ -153,38 +196,77 @@ export async function fetchCurrentInOutById(
 }
 
 
-
-export async function fetchSummary(query:string) {
+export async function fetchSummary(
+    agent?: string, // tham số cho agent
+    startDate?: string, // tham số cho startDate (định dạng tháng-năm)
+    endDate?: string // tham số cho endDate (định dạng tháng-năm)
+) {
     try {
-        const data = await sql`
+        let data;
+
+        if (agent === 'All agents') {
+            data = await sql`
         SELECT 
-            ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('month', ih.createat) DESC, ih.itemid) AS id,
-            ih.itemid,
-            i.name,
-            i.unitprice,
-            COALESCE(a.agent, 'Unknown') AS agent_name,
-            DATE_TRUNC('month', ih.createat) AS month,
-            ih.inbound,
-            SUM(ih.volume) AS total_volume
+          ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('month', ih.createat) DESC, ih.itemid) AS id,
+          ih.itemid,
+          i.name,
+          i.unitprice,
+          COALESCE(a.agent, 'Unknown') AS agent_name,
+          DATE_TRUNC('month', ih.createat) AS month,
+          ih.inbound,
+          SUM(ih.volume) AS total_volume
         FROM 
-            itemhistory ih
+          itemhistory ih
         LEFT JOIN 
-            agents a ON ih.agentid = a.id
+          agents a ON ih.agentid = a.id
         LEFT JOIN
-            items i ON ih.itemid = i.id
+          items i ON ih.itemid = i.id
         WHERE 
-            (${query} = '' OR a.agent ILIKE '%' || ${query} || '%')
+          ih.createat BETWEEN ${startDate} AND ${endDate}
         GROUP BY 
-            ih.itemid,
-            i.name,
-            i.unitprice,
-            ih.agentid,
-            a.agent,
-            ih.inbound,
-            DATE_TRUNC('month', ih.createat)
+          ih.itemid,
+          i.name,
+          i.unitprice,
+          ih.agentid,
+          a.agent,
+          ih.inbound,
+          DATE_TRUNC('month', ih.createat)
         ORDER BY 
-            month DESC, ih.itemid;
-        `;
+          month DESC, ih.itemid;
+      `;
+        } else {
+            data = await sql`
+        SELECT 
+          ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('month', ih.createat) DESC, ih.itemid) AS id,
+          ih.itemid,
+          i.name,
+          i.unitprice,
+          COALESCE(a.agent, 'Unknown') AS agent_name,
+          DATE_TRUNC('month', ih.createat) AS month,
+          ih.inbound,
+          SUM(ih.volume) AS total_volume
+        FROM 
+          itemhistory ih
+        LEFT JOIN 
+          agents a ON ih.agentid = a.id
+        LEFT JOIN
+          items i ON ih.itemid = i.id
+        WHERE 
+          (a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL))
+          AND ih.createat BETWEEN ${startDate} AND ${endDate}
+        GROUP BY 
+          ih.itemid,
+          i.name,
+          i.unitprice,
+          ih.agentid,
+          a.agent,
+          ih.inbound,
+          DATE_TRUNC('month', ih.createat)
+        ORDER BY 
+          month DESC, ih.itemid;
+      `;
+        }
+
         return data.rows;
     } catch (error) {
         console.error('Database Error:', error);

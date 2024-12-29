@@ -2,8 +2,12 @@ import {fetchHistoryById} from '@/app/lib/data';
 import {formatDateToLocal} from "@/app/lib/utils";
 import clsx from 'clsx';
 
-export default async function HistoryDetailTable({id}: { id: string}) {
-    const items = await fetchHistoryById(id);
+export default async function HistoryDetailTable({id, agentId, startDate, endDate}:{
+    id:string,
+    agentId:string,
+    startDate:string,
+    endDate:string}) {
+    const items = await fetchHistoryById(id, agentId, startDate, endDate);
 
     return (
         <div className="mt-3 flow-root">
@@ -14,7 +18,7 @@ export default async function HistoryDetailTable({id}: { id: string}) {
                             <div
                                 key={item.id}
                                 className={clsx(
-                                    "mb-2 w-full rounded-md p-4",
+                                    "mb-2 w-full rounded-md p-4 text-black",
                                     {
                                         'bg-green-400': item.inbound,
                                         'bg-yellow-400': item.outsup,

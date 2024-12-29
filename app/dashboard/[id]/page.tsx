@@ -31,7 +31,7 @@ export default async function Page(props: {
             <div>Tên: {item[0].name} - {item[0].unitprice}</div>
             <ItemDetailHeader id={id} agentId={query} startDate={startDate} endDate={endDate} />
             <FilterBar/>
-            <HistoryDetailTable id={id}/>
+            <HistoryDetailTable id={id} agentId={query} startDate={startDate} endDate={endDate} />
         </div>
     )
 }
