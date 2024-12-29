@@ -1,9 +1,9 @@
-import {fetchHistory} from '@/app/lib/data';
+import {fetchHistoryById} from '@/app/lib/data';
 import {formatDateToLocal} from "@/app/lib/utils";
 import clsx from 'clsx';
 
-export default async function HistoryTable({ query, start, end}: { query: string, start: string, end: string }) {
-    const items = await fetchHistory(query,start,end);
+export default async function HistoryDetailTable({id}: { id: string}) {
+    const items = await fetchHistoryById(id);
 
     return (
         <div className="mt-3 flow-root">
@@ -22,7 +22,7 @@ export default async function HistoryTable({ query, start, end}: { query: string
                                     }
                                 )}
                             >
-                                {item.name} - SL: {item.volume} - Ngày: {formatDateToLocal(item.createat)}
+                                SL: {item.volume} - Ngày: {formatDateToLocal(item.createat)}
                             </div>
                         ))}
                     </div>

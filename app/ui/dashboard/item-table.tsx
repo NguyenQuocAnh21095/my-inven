@@ -1,4 +1,5 @@
 import { fetchFilteredItems } from '@/app/lib/data';
+import Link from "next/link";
 
 export default async function InvoicesTable({ query}: { query: string}) {
     const items = await fetchFilteredItems(query);
@@ -13,7 +14,9 @@ export default async function InvoicesTable({ query}: { query: string}) {
                                 key={item.id}
                                 className="mb-2 w-full rounded-md bg-white p-4"
                             >
+                                <Link href={`/dashboard/${item.id}`}>
                                 {item.name} - Đơn giá: {item.unitprice}
+                                </Link>
                             </div>
                         ))}
                     </div>

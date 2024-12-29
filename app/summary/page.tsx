@@ -3,6 +3,7 @@ import {Suspense} from "react";
 import {Skeleton} from "@/app/ui/skeleton";
 import FilterBar from "@/app/ui/dashboard/filter-bar";
 import HistoryTable from "@/app/ui/dashboard/history-table";
+// import SummaryTable from "@/app/ui/dashboard/summary-table";
 
 
 export default async function Page(props: {
@@ -16,11 +17,11 @@ export default async function Page(props: {
 {
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
-    const startDate = searchParams?.startDate || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    const startDate = searchParams?.startDate || new Date(new Date().getFullYear(), 10, 1).toISOString().split('T')[0];
     const endDate = searchParams?.endDate || new Date().toISOString().split('T')[0];
     // const currentPage = Number(searchParams?.page) || 1;
     // const totalPages = await fetchInvoicesPages(query);
-    console.log(searchParams);
+    // console.log(searchParams);
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
@@ -32,6 +33,7 @@ export default async function Page(props: {
             </div>
             <Suspense key={query} fallback={<Skeleton />}>
                 <HistoryTable query={query} start={startDate} end={endDate}/>
+                {/*<SummaryTable query={query}/>*/}
             </Suspense>
             {/*<div className="mt-5 flex w-full justify-center">*/}
             {/*    <Pagination totalPages={totalPages} />*/}

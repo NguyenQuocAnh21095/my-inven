@@ -16,7 +16,7 @@ export default function FilterBar() {
     const [startDate, setStartDate] = useState<Date>(() => {
         // const today = new Date();
         // const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const firstDayOfMonth = new Date(new Date().getFullYear(), 0, 1);
+        const firstDayOfMonth = new Date(new Date().getFullYear(), 10, 1);
         firstDayOfMonth.setHours(firstDayOfMonth.getHours() + 7);
         console.log(firstDayOfMonth);
         return firstDayOfMonth;
@@ -84,7 +84,7 @@ export default function FilterBar() {
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}>
-                    <option value="">All Agent</option>
+                    <option value="all">All Agent</option>
                     {options?.map((option:Agent) => (
                         <option key={option.id} value={option.agent}>
                             {option.agent}

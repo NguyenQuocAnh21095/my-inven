@@ -10,9 +10,12 @@ export default {
     extend: {
       colors: {
         green: {
-          400: '#E3F0AF',
+          400: '#a1d99b',
           500: '#5DB996',
           600: '#118B50',
+        },
+        yellow:{
+          400: '#fdff7d',
         },
       },
     },
