@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 import HistoryDetailTable from "@/app/ui/dashboard/historydetail-table";
 import FilterBar from "@/app/ui/dashboard/filter-bar";
 import ItemDetailHeader from "@/app/ui/dashboard/itemdetail-header";
+import {ImExportItem} from "@/app/ui/itemdetail/inout-button";
 
 export default async function Page(props: {
     params: Promise<{ id: string }> ,
@@ -44,6 +45,10 @@ export default async function Page(props: {
             <div>Tên: {item[0].name} - {item[0].unitprice}</div>
             <ItemDetailHeader id={id} agentId={agent} startDate={startDate} endDate={endDate} />
             <FilterBar/>
+            <div className="flex justify-between gap-2 my-2">
+                <ImExportItem id={id} isImport={true}/>
+                <ImExportItem id={id} isImport={false}/>
+            </div>
             <HistoryDetailTable id={id} agentId={agent} startDate={startDate} endDate={endDate} />
         </div>
     )

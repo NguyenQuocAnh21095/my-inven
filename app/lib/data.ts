@@ -294,3 +294,19 @@ export async function fetchSummary(
         throw new Error('Failed to fetch Items summary data.');
     }
 }
+
+export async function fetchAgents(){
+    try {
+        const data = await sql`
+          SELECT
+            id,
+            agent
+          FROM agents
+          ORDER BY agent ASC
+        `;
+        return data.rows;
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to fetch all agents.');
+    }
+}

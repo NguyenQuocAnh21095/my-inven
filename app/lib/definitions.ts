@@ -1,5 +1,5 @@
 export type ItemHistory = {
-    id: string;
+    id?: string;
     itemid: string;
     agentid: string;
     volume: number;

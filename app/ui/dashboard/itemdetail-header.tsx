@@ -9,9 +9,10 @@ export default async function ItemDetailHeader({id, agentId, startDate, endDate}
     const currentValue = await fetchCurrentInOutById(id, agentId, startDate, endDate);
     if (currentValue[0]) {
     return (
-        <div>
-            <div>SL: {currentValue[0].agent} - Nhập: {currentValue[0].total_inbound} -
-                Xuất: {currentValue[0].total_outbound}</div>
+        <div className="flex justify-between">
+            <div>Cửa hàng: {currentValue[0].agent}</div>
+            <div>Nhập: <strong className="text-green-500">{currentValue[0].total_inbound}</strong> -
+                Xuất: <strong className="text-red-500">{currentValue[0].total_outbound}</strong></div>
         </div>
     )}
     else return (

@@ -31,7 +31,7 @@ export default async function Page(props: {
     const agent = searchParams?.agent || 'All agents';
     const startDate = searchParams?.startDate || defaultStartDate;
     const endDate = searchParams?.endDate || defaultEndDate;
-    console.log(defaultStartDate, defaultEndDate);
+    // console.log(defaultStartDate, defaultEndDate);
 
     return (
         <div className="w-full">

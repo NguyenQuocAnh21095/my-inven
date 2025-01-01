@@ -65,7 +65,7 @@ export default function FilterBar() {
 
         if (startDate) {
             newSearchParams.set('startDate', startDate.toISOString().split('T')[0]);
-            console.log(startDate);
+            // console.log(startDate);
         }
 
         if (endDate) {
@@ -80,7 +80,7 @@ export default function FilterBar() {
         <div className="flex flex-1 justify-between items-center bg-green-500 rounded-md py-[9px] px-4 text-black">
             <div className="flex flex-1 justify-start">
                 <select
-                    className="rounded-md bg-white"
+                    className="rounded-md bg-white h-7"
                     id="agents"
                     value={selectedValue}
                     onChange={(e) => {
@@ -97,7 +97,7 @@ export default function FilterBar() {
             </div>
             <div className="flex flex-1 justify-end">
                 <DatePicker
-                    className="rounded-md"
+                    className="rounded-md h-7"
                     selectsRange
                     startDate={startDate}
                     endDate={endDate}
