@@ -12,3 +12,9 @@ export type Agent = {
     id: string;
     agent: string;
 };
+
+export type Item ={
+    id?: string;
+    name: string;
+    unitprice: number;
+}

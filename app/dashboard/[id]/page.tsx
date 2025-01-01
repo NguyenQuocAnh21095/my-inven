@@ -4,6 +4,8 @@ import HistoryDetailTable from "@/app/ui/dashboard/historydetail-table";
 import FilterBar from "@/app/ui/dashboard/filter-bar";
 import ItemDetailHeader from "@/app/ui/dashboard/itemdetail-header";
 import {ImExportItem} from "@/app/ui/itemdetail/inout-button";
+import {Skeleton} from "@/app/ui/skeleton";
+import {Suspense} from "react";
 
 export default async function Page(props: {
     params: Promise<{ id: string }> ,
@@ -36,12 +38,12 @@ export default async function Page(props: {
 
     const item = await fetchItemById(id)
 
-    console.log(defaultStartDate,defaultEndDate, startDate, endDate);
+    // console.log(defaultStartDate,defaultEndDate, startDate, endDate);
     if (!item[0]) {
         notFound();
     }
     return (
-        <div>
+        <div className="text-black">
             <div>Tên: {item[0].name} - {item[0].unitprice}</div>
             <ItemDetailHeader id={id} agentId={agent} startDate={startDate} endDate={endDate} />
             <FilterBar/>
@@ -49,7 +51,9 @@ export default async function Page(props: {
                 <ImExportItem id={id} isImport={true}/>
                 <ImExportItem id={id} isImport={false}/>
             </div>
-            <HistoryDetailTable id={id} agentId={agent} startDate={startDate} endDate={endDate} />
+            <Suspense key={`${agent}-${startDate}-${endDate}`} fallback={<Skeleton/>}>
+                <HistoryDetailTable id={id} agentId={agent} startDate={startDate} endDate={endDate} />
+            </Suspense>
         </div>
     )
 }

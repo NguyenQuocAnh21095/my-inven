@@ -34,7 +34,7 @@ export default async function Page(props: {
     // console.log(defaultStartDate, defaultEndDate);
 
     return (
-        <div className="w-full">
+        <div className="w-full text-black">
             <div className="flex w-full items-center justify-between">
                 <h1 className="text-2xl">Summary</h1>
             </div>
