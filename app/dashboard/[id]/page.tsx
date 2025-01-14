@@ -1,11 +1,12 @@
 import {fetchItemById} from "@/app/lib/data";
 import {notFound} from "next/navigation";
 import HistoryDetailTable from "@/app/ui/dashboard/historydetail-table";
-import FilterBar from "@/app/ui/dashboard/filter-bar";
 import ItemDetailHeader from "@/app/ui/dashboard/itemdetail-header";
-import {ImExportItem} from "@/app/ui/itemdetail/inout-button";
+import {ExportItem, ImportAgentItem, ImportItem} from "@/app/ui/itemdetail/inout-button";
 import {Skeleton} from "@/app/ui/skeleton";
 import {Suspense} from "react";
+import FilterMonthBar from "@/app/ui/dashboard/filtermonth-bar";
+import clsx from "clsx";
 
 export default async function Page(props: {
     params: Promise<{ id: string }> ,
@@ -32,7 +33,7 @@ export default async function Page(props: {
     const searchParams = await props.searchParams;
 
     const id = params.id;
-    const agent = searchParams?.agent || 'All agents';
+    const agent = searchParams?.agent || '';
     const startDate = searchParams?.startDate || defaultStartDate;
     const endDate = searchParams?.endDate || defaultEndDate;
 
@@ -43,13 +44,15 @@ export default async function Page(props: {
         notFound();
     }
     return (
-        <div className="text-black">
-            <div>Tên: {item[0].name} - {item[0].unitprice}</div>
+        <div className="text-black text-center">
+            <div>Tên: {item[0].name} - {item[0].unitprice.toLocaleString()}</div>
+            <div className={clsx("text-green-500 text-xl",{"text-red-500": item[0].currentvolume <= 3})}>KHO: {item[0].currentvolume}</div>
             <ItemDetailHeader id={id} agentId={agent} startDate={startDate} endDate={endDate} />
-            <FilterBar/>
+            <FilterMonthBar/>
             <div className="flex justify-between gap-2 my-2">
-                <ImExportItem id={id} isImport={true}/>
-                <ImExportItem id={id} isImport={false}/>
+                <ImportItem id={id}/>
+                <ImportAgentItem id={id}/>
+                <ExportItem id={id}/>
             </div>
             <Suspense key={`${agent}-${startDate}-${endDate}`} fallback={<Skeleton/>}>
                 <HistoryDetailTable id={id} agentId={agent} startDate={startDate} endDate={endDate} />

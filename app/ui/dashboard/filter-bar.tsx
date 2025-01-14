@@ -86,13 +86,12 @@ export default function FilterBar() {
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}>
-                    <option value="All agents">All Agents</option>
+                    <option value= "" disabled>Select an agent</option>
                     {options?.map((option: Agent) => (
                         <option key={option.id} value={option.agent}>
                             {option.agent}
                         </option>
                     ))}
-                    <option value="No Agent">No Agent</option>
                 </select>
             </div>
             <div className="flex flex-1 justify-end">

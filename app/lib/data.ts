@@ -1,3 +1,4 @@
+'use server';
 import {sql} from '@vercel/postgres';
 
 export async function fetchFilteredItems(query:string) {
@@ -6,7 +7,8 @@ export async function fetchFilteredItems(query:string) {
             SELECT
                 items.id,
                 items.name,
-                items.unitprice
+                items.unitprice,
+                items.currentvolume
             FROM items
             WHERE name ILIKE ${`%${query}%`} 
         `;
@@ -23,7 +25,8 @@ export async function fetchItemById(id:string) {
             SELECT
                 items.id,
                 items.name,
-                items.unitprice
+                items.unitprice,
+                items.currentvolume
             FROM items
             WHERE id = ${id}
         `;
@@ -94,14 +97,14 @@ export async function fetchHistory(query: string, startDate: string, endDate: st
 // Lấy item detail history
 export async function fetchHistoryById(
     id: string,
-    agent: string = 'All agents', // tham số cho agent, mặc định là 'All agents'
+    agent: string = '', // tham số cho agent, mặc định là 'All agents'
     startDate: string, // tham số cho startDate
     endDate: string // tham số cho endDate
 ) {
     try {
         let data;
 
-        if (agent === 'All agents') {
+        if (agent === '') {
             data = await sql`
                 SELECT
                     ih.id,
@@ -113,22 +116,6 @@ export async function fetchHistoryById(
                 FROM itemhistory ih
                 LEFT JOIN agents a ON ih.agentid = a.id
                 WHERE ih.itemid = ${id}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-                ORDER BY createat DESC
-            `;
-        } else if (agent === 'No Agent') {
-            data = await sql`
-                SELECT
-                    ih.id,
-                    'No Agent' as agent,
-                    volume,
-                    inbound,
-                    outsup,
-                    createat
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND a.agent IS NULL
                 AND ih.createat BETWEEN ${startDate} AND ${endDate}
                 ORDER BY createat DESC
             `;
@@ -162,14 +149,14 @@ export async function fetchHistoryById(
 // Dùng để lấy Tổng nhập xuất theo agent, ngày cho phần header
 export async function fetchCurrentInOutById(
     id: string,
-    agent: string = 'All agents', // tham số cho agent, mặc định là 'All agents'
+    agent: string = '', // tham số cho agent, mặc định là 'All agents'
     startDate: string, // tham số cho startDate
     endDate: string // tham số cho endDate
 ) {
     try {
         let data;
 
-        if (agent === 'All agents') {
+        if (agent === '') {
             data = await sql`
                 SELECT
                     'All agents' as agent,
@@ -178,18 +165,6 @@ export async function fetchCurrentInOutById(
                 FROM itemhistory ih
                 LEFT JOIN agents a ON ih.agentid = a.id
                 WHERE ih.itemid = ${id}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-            `;
-        } else if (agent === 'No Agent') {
-            data = await sql`
-                SELECT
-                    'No Agent' as agent,
-                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
-                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND a.agent IS NULL
                 AND ih.createat BETWEEN ${startDate} AND ${endDate}
             `;
         } else {
@@ -310,3 +285,31 @@ export async function fetchAgents(){
         throw new Error('Failed to fetch all agents.');
     }
 }
+//Tính tổng số lượng hàng hiện có dựa trên itemId, agentId
+export async function fetchTotalVolumeByIdAgentId(
+    itemId: string,
+    agentId: string
+): Promise<number> {
+    try {
+        const result = await sql`
+          SELECT 
+                COALESCE(SUM(CASE WHEN inbound = true THEN volume ELSE 0 END), 0) -
+                COALESCE(SUM(CASE WHEN inbound = false THEN volume ELSE 0 END), 0) AS total_difference
+            FROM itemhistory
+            WHERE itemid = ${itemId}
+            AND agentid = ${agentId}
+        `;
+
+        // Truy cập vào giá trị đầu tiên của rows
+        if (result.rows.length > 0) {
+            return result.rows[0].total_difference || 0;
+        }
+
+        // Trả về 0 nếu không có kết quả nào
+        return 0;
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to fetch total volume for the agent.');
+    }
+}
+

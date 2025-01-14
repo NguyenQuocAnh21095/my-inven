@@ -89,13 +89,12 @@ export default function FilterMonthBar() {
                     onChange={(e) => {
                         handleChange(e.target.value);
                     }}>
-                    <option value="All agents">All Agent</option>
+                    <option value="" disabled>Select an agent</option>
                     {options?.map((option: Agent) => (
                         <option key={option.id} value={option.agent}>
                             {option.agent}
                         </option>
                     ))}
-                    <option value="No Agent">No Agent</option>
                 </select>
                 {/*<p>Selected Agent: {selectedValue}</p>*/}
             </div>

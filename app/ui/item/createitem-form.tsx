@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import {createItem} from "@/app/lib/actions";
+import {Item} from "@/app/lib/definitions";
 
 export default function CreateItemForm(){
     const [name, setName] = useState('');
@@ -17,17 +18,20 @@ export default function CreateItemForm(){
         if(!name){
             setIsSuccess(false);
             setMessage('Tên không được bỏ trống!');
+            setIsLoading(false);
             return;
         }
         if(!unitprice){
             setIsSuccess(false);
             setMessage('Giá tiền không được bỏ trống!');
+            setIsLoading(false);
             return;
         }
 
-        const itemData = {
+        const itemData:Item = {
             name,
             unitprice: parseInt(unitprice),
+            currentvolume: 0,
         };
 
         try {

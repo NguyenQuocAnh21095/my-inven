@@ -1,7 +1,7 @@
 export type ItemHistory = {
     id?: string;
     itemid: string;
-    agentid: string;
+    agentid?: string;
     volume: number;
     inbound: boolean;
     outsup: boolean;
@@ -17,4 +17,5 @@ export type Item ={
     id?: string;
     name: string;
     unitprice: number;
+    currentvolume: number;
 }

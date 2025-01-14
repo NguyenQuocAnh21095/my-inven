@@ -1,17 +1,36 @@
 import {MinusIcon, PlusIcon} from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import clsx from "clsx";
 
-export function ImExportItem({ id, isImport }: { id: string; isImport: boolean }) {
+export function ImportItem({ id }: { id: string}) {
     return (
         <Link
-            href={`/dashboard/${id}/createinout?isImport=${isImport}`}
-            className={clsx("flex h-10 items-center rounded-lg bg-green-500 px-4 text-bold font-medium text-white transition-colors",
-                {'bg-red-500' : isImport == false
-                })}
+            href={`/dashboard/${id}/createimport`}
+            className="flex h-10 items-center rounded-lg bg-green-500 px-4 text-bold font-medium text-white transition-colors"
         >
-            <span>{isImport ? "Nhập":"Xuất"}</span>
-            {isImport === true ? <PlusIcon className="h-5 md:ml-4" /> : <MinusIcon className="h-5 md:ml-4" />}
+            <span>Nhập Kho</span>
+            <PlusIcon className="h-5 md:ml-4" />
+        </Link>
+    );
+}
+export function ImportAgentItem({ id }: { id: string}) {
+    return (
+        <Link
+            href={`/dashboard/${id}/createagentimport`}
+            className="flex h-10 items-center rounded-lg bg-green-500 px-4 text-bold font-medium text-white transition-colors"
+        >
+            <span>Nhập Agent</span>
+            <PlusIcon className="h-5 md:ml-4" />
+        </Link>
+    );
+}
+export function ExportItem({ id }: { id: string}) {
+    return (
+        <Link
+            href={`/dashboard/${id}/createagentexport`}
+            className="flex h-10 items-center rounded-lg bg-red-500 px-4 text-bold font-medium text-white transition-colors"
+        >
+            <span>Xuất</span>
+            <MinusIcon className="h-5 md:ml-4" />
         </Link>
     );
 }

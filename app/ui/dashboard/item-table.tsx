@@ -1,5 +1,6 @@
 import { fetchFilteredItems } from '@/app/lib/data';
 import Link from "next/link";
+import clsx from "clsx";
 
 export default async function InvoicesTable({ query}: { query: string}) {
     const items = await fetchFilteredItems(query);
@@ -10,15 +11,17 @@ export default async function InvoicesTable({ query}: { query: string}) {
                 <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
                     <div className="max-h-[50vh] overflow-y-auto">
                         {items?.map((item) => (
-                            <div
+                            <Link href={`/dashboard/${item.id}`}
                                 key={item.id}
-                                className="flex mb-2 w-full rounded-md bg-white p-4 text-black"
+                                className={clsx("flex mb-2 w-full rounded-md bg-white p-4 text-black justify-between items-center",
+                                    {"text-red-500":item.currentvolume<=3})}
                             >
-                                <Link href={`/dashboard/${item.id}`}>
+                                <div>
                                     <strong>{item.name}</strong>
-                                    <div>Đơn giá: {item.unitprice}</div>
-                                </Link>
-                            </div>
+                                    <div>Đơn giá: {item.unitprice.toLocaleString()}</div>
+                                </div>
+                                <div>Số lượng hiện tại: {item.currentvolume}</div>
+                            </Link>
                         ))}
                     </div>
 
