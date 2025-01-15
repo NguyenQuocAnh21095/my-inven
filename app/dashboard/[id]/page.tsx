@@ -2,7 +2,7 @@ import {fetchItemById} from "@/app/lib/data";
 import {notFound} from "next/navigation";
 import HistoryDetailTable from "@/app/ui/dashboard/historydetail-table";
 import ItemDetailHeader from "@/app/ui/dashboard/itemdetail-header";
-import {ExportItem, ImportAgentItem, ImportItem} from "@/app/ui/itemdetail/inout-button";
+import {ExportItem, ImportAgentItem, ImportItem, TransformItem} from "@/app/ui/itemdetail/inout-button";
 import {Skeleton} from "@/app/ui/skeleton";
 import {Suspense} from "react";
 import FilterMonthBar from "@/app/ui/dashboard/filtermonth-bar";
@@ -52,6 +52,7 @@ export default async function Page(props: {
             <div className="flex justify-between gap-2 my-2">
                 <ImportItem id={id}/>
                 <ImportAgentItem id={id}/>
+                <TransformItem id={id}/>
                 <ExportItem id={id}/>
             </div>
             <Suspense key={`${agent}-${startDate}-${endDate}`} fallback={<Skeleton/>}>

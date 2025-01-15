@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { createItemHistory, updateItemById } from '@/app/lib/actions';
+import { createItemHistory } from '@/app/lib/actions';
 import { Agent, Item } from '@/app/lib/definitions';
-import {fetchItemById, fetchTotalVolumeByIdAgentId} from "@/app/lib/data";
+import { fetchTotalVolumeByIdAgentId} from "@/app/lib/data";
 
 export default function OutForm({ agents, item }:
                                    {agents: Agent[], item: Item}) {
