@@ -13,7 +13,7 @@ export default async function HistoryDetailTable({id, agentId, startDate, endDat
         <div className="mt-3 flow-root">
             <div className="inline-block min-w-full align-middle">
                 <div className="rounded-lg bg-gray-100 p-2 md:pt-0">
-                    <div className="max-h-[60vh] overflow-y-auto">
+                    <div className="max-h-[60vh] overflow-y-auto pt-4">
                         {items?.map((item) => (
                             <div
                                 key={item.id}
@@ -21,8 +21,10 @@ export default async function HistoryDetailTable({id, agentId, startDate, endDat
                                     "mb-2 w-full rounded-md p-4 flex justify-between text-black",
                                     {
                                         'bg-white': item.inbound,
-                                        'bg-yellow-400': item.outsup,
+                                        'bg-yellow-400': !item.inbound && item.outsup,
                                         'bg-white text-red-500': !item.inbound && !item.outsup,
+                                        'bg-purple-300': item.volume < 0,
+                                        'text-green-500': item.inbound && item.outsup,
                                     }
                                 )}
                             >

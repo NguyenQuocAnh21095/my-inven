@@ -97,45 +97,33 @@ export async function fetchHistory(query: string, startDate: string, endDate: st
 // Lấy item detail history
 export async function fetchHistoryById(
     id: string,
-    agent: string = '', // tham số cho agent, mặc định là 'All agents'
-    startDate: string, // tham số cho startDate
-    endDate: string // tham số cho endDate
+    agent: string, // agent có thể là rỗng
+    startDate: string,
+    endDate: string
 ) {
     try {
-        let data;
-
-        if (agent === '') {
-            data = await sql`
-                SELECT
-                    ih.id,
-                    'All agents' as agent,
-                    volume,
-                    inbound,
-                    outsup,
-                    createat
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-                ORDER BY createat DESC
-            `;
-        } else {
-            data = await sql`
-                SELECT
-                    ih.id,
-                    COALESCE(a.agent, 'No Agent') AS agent,
-                    volume,
-                    inbound,
-                    outsup,
-                    createat
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND a.agent = ${agent}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-                ORDER BY createat DESC
-            `;
+        // Nếu agent rỗng, không thực hiện query và trả về mảng rỗng
+        if (!agent) {
+            console.warn('Agent is empty. No results will be returned.');
+            return []; // Trả về mảng rỗng
         }
+
+        // Thực hiện truy vấn nếu agent có giá trị
+        const data = await sql`
+            SELECT
+                ih.id,
+                COALESCE(a.agent, 'No Agent') AS agent,
+                volume,
+                inbound,
+                outsup,
+                createat
+            FROM itemhistory ih
+            LEFT JOIN agents a ON ih.agentid = a.id
+            WHERE ih.itemid = ${id}
+            AND a.agent = ${agent}
+            AND ih.createat BETWEEN ${startDate} AND ${endDate}
+            ORDER BY createat DESC
+        `;
 
         return data.rows;
     } catch (error) {
@@ -144,44 +132,34 @@ export async function fetchHistoryById(
     }
 }
 
-
-
 // Dùng để lấy Tổng nhập xuất theo agent, ngày cho phần header
 export async function fetchCurrentInOutById(
     id: string,
-    agent: string = '', // tham số cho agent, mặc định là 'All agents'
-    startDate: string, // tham số cho startDate
-    endDate: string // tham số cho endDate
+    agent: string, // Agent có thể là rỗng, bỏ giá trị mặc định
+    startDate: string,
+    endDate: string
 ) {
     try {
-        let data;
-
-        if (agent === '') {
-            data = await sql`
-                SELECT
-                    'All agents' as agent,
-                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
-                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-            `;
-        } else {
-            data = await sql`
-                SELECT
-                    COALESCE(a.agent, 'No Agent') AS agent,
-                    SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
-                    SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
-                FROM itemhistory ih
-                LEFT JOIN agents a ON ih.agentid = a.id
-                WHERE ih.itemid = ${id}
-                AND a.agent = ${agent}
-                AND ih.createat BETWEEN ${startDate} AND ${endDate}
-                GROUP BY a.agent
-                ORDER BY agent
-            `;
+        // Nếu agent rỗng, không thực hiện query và trả về mảng rỗng
+        if (!agent) {
+            console.warn('Agent is empty. No results will be returned.');
+            return []; // Trả về mảng rỗng
         }
+
+        // Thực hiện truy vấn khi agent có giá trị
+        const data = await sql`
+            SELECT
+                COALESCE(a.agent, 'No Agent') AS agent,
+                SUM(CASE WHEN ih.inbound = true THEN ih.volume ELSE 0 END) AS total_inbound,
+                SUM(CASE WHEN ih.inbound = false THEN ih.volume ELSE 0 END) AS total_outbound
+            FROM itemhistory ih
+            LEFT JOIN agents a ON ih.agentid = a.id
+            WHERE ih.itemid = ${id}
+            AND a.agent = ${agent}
+            AND ih.createat BETWEEN ${startDate} AND ${endDate}
+            GROUP BY a.agent
+            ORDER BY agent
+        `;
 
         return data.rows;
     } catch (error) {
@@ -189,8 +167,6 @@ export async function fetchCurrentInOutById(
         throw new Error('Failed to fetch item current volume by Id.');
     }
 }
-
-
 
 export async function fetchSummary(
     agent?: string, // tham số cho agent
