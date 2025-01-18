@@ -1,6 +1,7 @@
 'use server';
 import { sql } from "@vercel/postgres";
 import {Item, ItemHistory} from "@/app/lib/definitions";
+import {revalidatePath} from "next/cache";
 
 export async function createItemHistory({ itemid, agentid, volume, inbound, outsup, createat }: ItemHistory) {
     try {
@@ -33,6 +34,7 @@ export async function createItem({name, unitprice, currentvolume}:Item){
         }
     }
 }
+
 export async function updateItemById({ id, name, unitprice, currentvolume }: Item) {
     try {
         await sql`
@@ -48,5 +50,42 @@ export async function updateItemById({ id, name, unitprice, currentvolume }: Ite
         return {
             message: `Database Error: Failed to update item.`,
         };
+    }
+}
+
+export async function deleteFullItemById({ id }: { id: string }) {
+    const client = sql;  // Dùng đối tượng sql mặc định của @vercel/postgres
+    try {
+        // Bắt đầu transaction
+        await client`
+            BEGIN;
+        `;
+
+        // Xóa record từ bảng itemhistory
+        await client`
+            DELETE FROM itemhistory
+            WHERE itemid = ${id};
+        `;
+
+        // Xóa record từ bảng items
+        await client`
+            DELETE FROM items
+            WHERE id = ${id};
+        `;
+
+        // Commit transaction nếu không có lỗi
+        await client`
+            COMMIT;
+        `;
+        revalidatePath('/dashboard/invoices');
+        // redirect('/dashboard/invoices');
+        return { success: true, message: 'Xóa thành công!' };
+    } catch (error) {
+        // Rollback nếu có lỗi
+        await client`
+            ROLLBACK;
+        `;
+        console.error('Lỗi khi xóa record:', error);
+        return { success: false, message: 'Lỗi khi xóa record.', error };
     }
 }
