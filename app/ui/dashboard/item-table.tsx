@@ -8,6 +8,7 @@ export default async function InvoicesTable({ query}: { query: string}) {
 
     return (
         <div className="mt-3 flow-root">
+            <div>Kiểm tra branch</div>
             <div className="inline-block min-w-full align-middle">
                 <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
                     <div className="max-h-[50vh] overflow-y-auto pt-2">
