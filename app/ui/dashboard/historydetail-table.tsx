@@ -1,12 +1,14 @@
-import {fetchHistoryById} from '@/app/lib/data';
-import {formatDateToLocal} from "@/app/lib/utils";
+import { fetchHistoryById } from '@/app/lib/data';
+import { formatDateToLocal } from "@/app/lib/utils";
 import clsx from 'clsx';
+import {DeleteItemHistoryButton, EditItemHistoryButton} from "@/app/ui/itemdetail/inout-button";
 
-export default async function HistoryDetailTable({id, agentId, startDate, endDate}:{
-    id:string,
-    agentId:string,
-    startDate:string,
-    endDate:string}) {
+export default async function HistoryDetailTable({ id, agentId, startDate, endDate }: {
+    id: string,
+    agentId: string,
+    startDate: string,
+    endDate: string
+}) {
     const items = await fetchHistoryById(id, agentId, startDate, endDate);
 
     return (
@@ -17,20 +19,26 @@ export default async function HistoryDetailTable({id, agentId, startDate, endDat
                         {items?.map((item) => (
                             <div
                                 key={item.id}
-                                className={clsx(
-                                    "mb-2 w-full rounded-md p-4 flex justify-between text-black",
+                                className={clsx("mb-2 w-full rounded-md p-2 flex justify-between text-black",
                                     {
                                         'bg-white': item.inbound,
                                         'bg-yellow-400': !item.inbound && item.outsup,
                                         'bg-white text-red-500': !item.inbound && !item.outsup,
-                                        'bg-purple-300': item.volume < 0,
+                                        'bg-orange-300': item.volume < 0,
                                         'text-green-500': item.inbound && item.outsup,
                                     }
                                 )}
                             >
-                                <div className="flex justify-between w-full">
+                                <div className="flex justify-between items-center w-full">
                                     <strong>{item.inbound ? 'Nhập' : 'Xuất'}: {item.volume}</strong>
                                     <div>Ngày: {formatDateToLocal(item.createat)}</div>
+                                </div>
+                                <div className="flex justify-end gap-2 ml-2">
+                                    {/* Điều kiện ẩn nút */}
+                                    {!(item.inbound && item.outsup) && item.volume >= 0 && (
+                                        <EditItemHistoryButton id={id} historyId={item.id} inbound={item.inbound} />
+                                    )}
+                                    <DeleteItemHistoryButton/>
                                 </div>
                             </div>
                         ))}

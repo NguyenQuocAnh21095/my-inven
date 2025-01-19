@@ -17,6 +17,9 @@ export default {
         yellow:{
           400: '#fdff7d',
         },
+        purple: {
+          400: '#8ec5ff',
+        }
       },
     },
   },

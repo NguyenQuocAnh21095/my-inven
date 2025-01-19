@@ -132,6 +132,27 @@ export async function fetchHistoryById(
     }
 }
 
+export async function fetchItemHistoryById(id:string) {
+    try {
+        const data = await sql`
+            SELECT ih.id,
+                ih.itemid,
+                ih.agentid,
+                ih.volume,
+                ih.inbound,
+                ih.outsup,
+                ih.createat
+            FROM itemhistory ih
+            WHERE ih.id = ${id};
+        `;
+        return data.rows;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch item history by Id.');
+    }
+
+}
+
 // Dùng để lấy Tổng nhập xuất theo agent, ngày cho phần header
 export async function fetchCurrentInOutById(
     id: string,
@@ -286,6 +307,23 @@ export async function fetchTotalVolumeByIdAgentId(
     } catch (err) {
         console.error('Database Error:', err);
         throw new Error('Failed to fetch total volume for the agent.');
+    }
+}
+
+export async function fetchSumExportByItemAgent(itemid: string, agentid: string): Promise<number> {
+    try {
+        const data = await sql`
+          SELECT SUM(volume) as export_total FROM itemhistory
+            WHERE itemid = ${itemid}
+            AND agentid = ${agentid}
+            AND inbound = false
+        `;
+
+        // Trả về giá trị export_total
+        return data.rows[0]?.export_total ?? 0;  // Trả về 0 nếu không có kết quả
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to total export of current Agent');
     }
 }
 

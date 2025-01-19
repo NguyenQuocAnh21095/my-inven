@@ -89,3 +89,66 @@ export async function deleteFullItemById({ id }: { id: string }) {
         return { success: false, message: 'Lỗi khi xóa record.', error };
     }
 }
+
+export async function UpdateFullItemHistoryById({
+                                                    id,
+                                                    curentVolume,
+                                                    historyId,
+                                                    volume,
+                                                    agentId,
+                                                    inbound,
+                                                    outsup,
+                                                    createat,
+                                                }: {
+    id: string;
+    curentVolume: number;
+    historyId: string;
+    volume: number;
+    agentId: string;
+    inbound:boolean;
+    outsup: boolean;
+    createat: string;
+}) {
+    const client = await sql.connect();
+
+    try {
+        // Bắt đầu transaction
+        await client.query('BEGIN');
+
+        // Cập nhật bảng items
+        await client.query(
+            `
+            UPDATE items
+            SET currentvolume = $1
+            WHERE id = $2
+        `,
+            [curentVolume, id] // Sử dụng tham số hóa để truyền giá trị
+        );
+
+        // Cập nhật bảng itemhistory
+        await client.query(
+            `
+            UPDATE itemhistory
+            SET agentid = $1, volume = $2, outsup = $3, createat = $4
+            WHERE id = $5
+        `,
+            [agentId, volume, outsup, createat, historyId] // Tham số hóa
+        );
+
+        // Commit transaction nếu không có lỗi
+        await client.query('COMMIT');
+        if (inbound) {
+            revalidatePath(`dashboard/${id}/${historyId}/edit-inhistory`);
+        } else {revalidatePath(`dashboard/${id}/${historyId}/edit-outhistory`);}
+        return {
+            message: 'Item updated successfully!',
+        };
+    } catch (err) {
+        // Nếu có lỗi, rollback transaction
+        await client.query('ROLLBACK');
+        console.error('Database Error:', err);
+        throw new Error('Failed to update item and item history');
+    } finally {
+        client.release(); // Đảm bảo kết nối được đóng
+    }
+}
