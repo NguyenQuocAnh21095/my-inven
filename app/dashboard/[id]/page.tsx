@@ -49,7 +49,7 @@ export default async function Page(props: {
             <div className={clsx("text-green-500 text-xl",{"text-red-500": item[0].currentvolume <= 3})}>KHO: {item[0].currentvolume}</div>
             <ItemDetailHeader id={id} agentId={agent} startDate={startDate} endDate={endDate} />
             <FilterMonthBar/>
-            <div className="flex justify-between gap-2 my-2">
+            <div className="flex justify-between gap-2 my-2 max-w-[100vh] overflow-x-auto">
                 <ImportItem id={id}/>
                 <ImportAgentItem id={id}/>
                 <TransformItem id={id}/>

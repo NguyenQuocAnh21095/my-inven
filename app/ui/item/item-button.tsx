@@ -19,7 +19,7 @@ export function UpdateItemButton({ id }: { id: string }) {
     return (
         <Link
             href={`/dashboard/${id}/edit-item`}
-            className="rounded-md border p-2 hover:bg-gray-100"
+            className="rounded-md border border-blue-500 text-blue-500 p-2 hover:bg-gray-100"
         >
             <PencilIcon className="w-5" />
         </Link>

@@ -1,7 +1,7 @@
 import {fetchHistoryById, fetchItemById} from '@/app/lib/data';
 import { formatDateToLocal } from "@/app/lib/utils";
 import clsx from 'clsx';
-import {DeleteItemHistoryButton, EditItemHistoryButton} from "@/app/ui/itemdetail/inout-button";
+import {DeleteItemHistoryButton, EditItemHistoryButton, NoActionButton} from "@/app/ui/itemdetail/inout-button";
 import {Item} from "@/app/lib/definitions";
 
 export default async function HistoryDetailTable({ id, agentId, startDate, endDate }: {
@@ -30,9 +30,9 @@ export default async function HistoryDetailTable({ id, agentId, startDate, endDa
                                 className={clsx("mb-2 w-full rounded-md p-2 flex justify-between text-black",
                                     {
                                         'bg-white': item.inbound,
-                                        'bg-yellow-400': !item.inbound && item.outsup,
+                                        'bg-white text-yellow-600': !item.inbound && item.outsup,
                                         'bg-white text-red-500': !item.inbound && !item.outsup,
-                                        'bg-orange-300': item.volume < 0,
+                                        'text-purple-500': item.volume < 0,
                                         'text-green-500': item.inbound && item.outsup,
                                     }
                                 )}
@@ -42,12 +42,16 @@ export default async function HistoryDetailTable({ id, agentId, startDate, endDa
                                     <div>Ngày: {formatDateToLocal(item.createat)}</div>
                                 </div>
                                 <div className="flex justify-end gap-2 ml-2">
-                                    {/* Điều kiện ẩn nút */}
-                                    {!(item.inbound && item.outsup) && item.volume >= 0 && (
-                                        <EditItemHistoryButton id={id} historyId={item.id} inbound={item.inbound} />
+                                    {/* Điều kiện kiểm tra và hiển thị nút */}
+                                    {!(item.inbound && item.outsup) && item.volume >= 0 ? (
+                                        <EditItemHistoryButton id={id} historyId={item.id} inbound={item.inbound}/>
+                                    ) : (
+                                        <NoActionButton/>
                                     )}
-                                    <DeleteItemHistoryButton item={ite} historyId={item.id} inbound={item.inbound} newVolume={item.volume} />
+                                    <DeleteItemHistoryButton item={ite} historyId={item.id} inbound={item.inbound}
+                                                             newVolume={item.volume}/>
                                 </div>
+
                             </div>
                         ))}
                     </div>

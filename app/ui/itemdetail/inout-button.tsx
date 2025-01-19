@@ -1,5 +1,12 @@
 'use client';
-import {ArrowsUpDownIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon} from '@heroicons/react/24/outline';
+import {
+    ArrowsUpDownIcon,
+    HandRaisedIcon,
+    MinusIcon,
+    PencilIcon,
+    PlusIcon,
+    TrashIcon
+} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import {useState} from "react";
 import {DeleteFullInItemhistoryById, DeleteOutItemHistoryById} from "@/app/lib/actions";
@@ -113,4 +120,15 @@ export function DeleteItemHistoryButton({item, historyId, inbound, newVolume}: {
             )}
         </div>
     );
+}
+
+export function NoActionButton() {
+    return (
+        <div
+            className="rounded-md border p-2 border-gray-500"
+        >
+            <span className="sr-only">No Action</span>
+            <HandRaisedIcon className="w-5 text-gray-500"/>
+        </div>
+    )
 }
