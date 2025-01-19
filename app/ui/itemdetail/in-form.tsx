@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createItemHistory, updateItemById } from '@/app/lib/actions';
 import { Agent, Item } from '@/app/lib/definitions';
 import {fetchItemById} from "@/app/lib/data";
+import Link from "next/link";
 
 export default function InForm({ agents, item }:
                                    {agents: Agent[], item: Item}) {
@@ -108,9 +109,12 @@ export default function InForm({ agents, item }:
         }
         setVolume(newVolume);
     };
+    // Tìm Agent hiện tại dựa trên selectedAgentId
+    const currentAgent = agents.find((agent) => agent.id === agentid);
 
     return (
         <div className="bg-gray-200 rounded-md p-4 text-black mt-2">
+            <Link className="text-blue-500" href={`/dashboard/${item.id}?agent=${currentAgent?.agent || ''}`}>Quay về</Link>
             <div className="text-center p-2">Lưu ý! Bạn đang nhập vào Agent.
                 <br />{item.name}<br />Số lượng hiện tại trong KHO: {currentVolume}</div>
             <form className="flex-col" onSubmit={(e) => e.preventDefault()}>

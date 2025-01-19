@@ -1,7 +1,5 @@
-import Link from "next/link";
 import {fetchAgents, fetchItemById} from "@/app/lib/data";
 import {Agent, Item} from "@/app/lib/definitions";
-// import InTotalForm from "@/app/ui/itemdetail/intotal-form";
 import OutForm from "@/app/ui/itemdetail/out-form";
 
 export default async function Page(props: {
@@ -25,9 +23,6 @@ export default async function Page(props: {
 
     return(
         <div>
-            <Link className="text-blue-500" href={`/dashboard/${id}`}>Quay về</Link>
-            {/*<div className="flex justify-center text-center text-black">Bạn đang mở Form NHẬP<br/>KHO: {item.currentvolume}</div>*/}
-            {/*<InTotalForm item={item}/>*/}
             <OutForm agents={agents} item={item}/>
         </div>
     )

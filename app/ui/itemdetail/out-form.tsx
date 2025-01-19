@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createItemHistory } from '@/app/lib/actions';
 import { Agent, Item } from '@/app/lib/definitions';
 import { fetchTotalVolumeByIdAgentId} from "@/app/lib/data";
+import Link from "next/link";
 
 export default function OutForm({ agents, item }:
                                    {agents: Agent[], item: Item}) {
@@ -136,9 +137,12 @@ export default function OutForm({ agents, item }:
             setTitleMessage('Đã xảy ra lỗi khi lấy số lượng.');
         }
     };
+    // Tìm Agent hiện tại dựa trên selectedAgentId
+    const currentAgent = agents.find((agent) => agent.id === agentid);
 
     return (
         <div className="bg-gray-200 rounded-md p-4 text-black mt-2">
+            <Link className="text-blue-500" href={`/dashboard/${item.id}?agent=${currentAgent?.agent || ''}`}>Quay về</Link>
             <div className="text-center p-2">Lưu ý! Bạn đang Xuất khỏi Agent.
                 <br />{item.name}<br />{titleMessage}</div>
             <form className="flex-col" onSubmit={(e) => e.preventDefault()}>

@@ -1,7 +1,8 @@
-import { fetchHistoryById } from '@/app/lib/data';
+import {fetchHistoryById, fetchItemById} from '@/app/lib/data';
 import { formatDateToLocal } from "@/app/lib/utils";
 import clsx from 'clsx';
 import {DeleteItemHistoryButton, EditItemHistoryButton} from "@/app/ui/itemdetail/inout-button";
+import {Item} from "@/app/lib/definitions";
 
 export default async function HistoryDetailTable({ id, agentId, startDate, endDate }: {
     id: string,
@@ -10,6 +11,13 @@ export default async function HistoryDetailTable({ id, agentId, startDate, endDa
     endDate: string
 }) {
     const items = await fetchHistoryById(id, agentId, startDate, endDate);
+    const itemsData = await fetchItemById(id);
+    const ite:Item ={
+        id:itemsData[0].id,
+        name: itemsData[0].name,
+        unitprice: itemsData[0].unitprice,
+        currentvolume: itemsData[0].currentvolume,
+    }
 
     return (
         <div className="mt-3 flow-root">
@@ -38,7 +46,7 @@ export default async function HistoryDetailTable({ id, agentId, startDate, endDa
                                     {!(item.inbound && item.outsup) && item.volume >= 0 && (
                                         <EditItemHistoryButton id={id} historyId={item.id} inbound={item.inbound} />
                                     )}
-                                    <DeleteItemHistoryButton/>
+                                    <DeleteItemHistoryButton item={ite} historyId={item.id} inbound={item.inbound} newVolume={item.volume} />
                                 </div>
                             </div>
                         ))}

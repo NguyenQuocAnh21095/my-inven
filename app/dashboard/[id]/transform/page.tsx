@@ -1,4 +1,3 @@
-import Link from "next/link";
 import TransForm from "@/app/ui/itemdetail/transform-form";
 import {Agent, Item} from "@/app/lib/definitions";
 import {fetchAgents, fetchItemById} from "@/app/lib/data";
@@ -23,7 +22,6 @@ export default async function Page(props: {
 
     return (
         <div>
-            <Link className="text-blue-500" href={`/dashboard/${id}`}>Quay về</Link>
             <TransForm agents={agents} item={item}/>
         </div>
     )

@@ -2,6 +2,8 @@
 import {ArrowsUpDownIcon, MinusIcon, PencilIcon, PlusIcon, TrashIcon} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import {useState} from "react";
+import {DeleteFullInItemhistoryById, DeleteOutItemHistoryById} from "@/app/lib/actions";
+import {Item} from "@/app/lib/definitions";
 
 export function ImportItem({ id }: { id: string}) {
     return (
@@ -59,18 +61,23 @@ export function EditItemHistoryButton({ id, historyId, inbound }: { id: string; 
     );
 }
 
-export function DeleteItemHistoryButton() {
+export function DeleteItemHistoryButton({item, historyId, inbound, newVolume}: { item: Item, historyId: string; inbound: boolean, newVolume:number }) {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     // Hàm xử lý delete
-    // const handleDelete = async () => {
-    //     try {
-    //         await deleteFullItemById({ id });
-    //         setIsPopupOpen(false); // Đóng popup sau khi xóa thành công
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    const handleDelete = async () => {
+        try {
+            if (inbound){
+                await DeleteFullInItemhistoryById({item,historyId,newVolume});
+                setIsPopupOpen(false); // Đóng popup sau khi xóa thành công
+            } else {
+                await DeleteOutItemHistoryById({item,historyId});
+                setIsPopupOpen(false); // Đóng popup sau khi xóa thành công
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <div>
@@ -96,7 +103,7 @@ export function DeleteItemHistoryButton() {
                             </button>
                             <button
                                 className="bg-red-500 p-2 text-white rounded-md"
-                                onClick={() => setIsPopupOpen(false)}
+                                onClick={handleDelete}
                             >
                                 Xóa
                             </button>

@@ -74,7 +74,7 @@ export default function EditItemHistoryInForm({
             // setMessage('Cập nhật thành công!');
             alert('Cập nhật thành công!');
         } catch (error) {
-            setMessage('Tạo thất bại!');
+            setMessage('Cập nhật thất bại!');
             console.error('Failed to update item history:', error);
         } finally {
             setIsLoading(false); // Đảm bảo isLoading luôn được set về false

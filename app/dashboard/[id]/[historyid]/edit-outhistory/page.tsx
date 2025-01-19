@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {fetchAgents, fetchItemById, fetchItemHistoryById} from "@/app/lib/data";
 import {Agent, Item, ItemHistory} from "@/app/lib/definitions";
 import EditItemHistoryOutForm from "@/app/ui/itemdetail/edit-itemhistory-outform";
@@ -36,12 +35,8 @@ export default async function Page(props: {
         currentvolume: itemsData[0].currentvolume,
     };
 
-
     return(
         <div>
-            <Link className="text-blue-500" href={`/dashboard/${id}`}>Quay về</Link>
-            {/*<div className="flex justify-center text-center text-black">Bạn đang mở Form NHẬP<br/>KHO: {item.currentvolume}</div>*/}
-            {/*<InTotalForm item={item}/>*/}
             <EditItemHistoryOutForm item={item} itemHistory={itemHistory} agents={agents}/>
         </div>
     )

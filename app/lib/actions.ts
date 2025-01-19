@@ -152,3 +152,88 @@ export async function UpdateFullItemHistoryById({
         client.release(); // Đảm bảo kết nối được đóng
     }
 }
+
+export async function UpdateOutItemHistoryById(item: ItemHistory) {
+    try {
+        const { id, itemid, agentid, volume, inbound, outsup, createat } = item;
+
+        if (!id) {
+            throw new Error("Item ID is required for updating.");
+        }
+
+        await sql`
+            UPDATE itemHistory
+            SET
+                itemid = ${itemid},
+                agentid = ${agentid ?? null},
+                volume = ${volume},
+                inbound = ${inbound},
+                outsup = ${outsup},
+                createat = ${createat}
+            WHERE id = ${id};
+        `;
+
+        return {
+            message: 'Item updated successfully!',
+        };
+    } catch (error) {
+        console.error('Database Error:', error);
+        return {
+            message: `Database Error: Failed to update item.`,
+        };
+    }
+}
+
+export async function DeleteFullInItemhistoryById({
+                                                      item,
+                                                      historyId,
+                                                      newVolume,}: {item: Item;
+    historyId: string;
+    newVolume: number;
+}) {
+    const client = await sql.connect();
+    try {
+        await client.query('BEGIN');
+        // Cập nhật bảng items
+        await client.query(
+            `
+            UPDATE items
+            SET currentvolume = $1
+            WHERE id = $2
+        `,
+            [newVolume + item.currentvolume, item.id] // Sử dụng tham số để tránh SQL Injection
+        );
+        // Xóa từ bảng itemhistory
+        await client.query(
+            `
+            DELETE FROM itemhistory
+            WHERE id = $1
+        `,
+            [historyId]
+        );
+        await client.query('COMMIT');
+        revalidatePath(`/dashboard/${item.id}`);
+
+        return { success: true, message: 'Xóa thành công!' };
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Database Error:', err);
+        throw new Error('Failed to update item and delete item history');
+    } finally {
+        if (client) client.release();
+    }
+}
+
+export async function DeleteOutItemHistoryById({item,historyId}: {item: Item, historyId: string;}) {
+    try {
+        await sql`
+            DELETE FROM itemhistory
+            WHERE id = ${historyId}
+        `;
+        revalidatePath(`/dashboard/${item.id}`);
+        return { success: true, message: 'Xóa thành công!' };
+    } catch (err) {
+        console.error('Database Error:', err);
+        return { success: false, message: 'Xóa thất bại!' };
+    }
+}
