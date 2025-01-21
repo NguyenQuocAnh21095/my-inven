@@ -190,82 +190,54 @@ export async function fetchCurrentInOutById(
 }
 
 export async function fetchSummary(
-    agent?: string, // tham số cho agent
-    startDate?: string, // tham số cho startDate (định dạng tháng-năm)
-    endDate?: string // tham số cho endDate (định dạng tháng-năm)
+    agentId?: string, // Agent ID
+    startDate?: string, // Ngày bắt đầu
+    endDate?: string // Ngày kết thúc
 ) {
+    // Trả về mảng rỗng nếu thiếu tham số
+    if (!agentId || !startDate || !endDate) {
+        return [];
+    }
+
     try {
-        let data;
+        const query = `
+            SELECT 
+                i.id,
+                i.name,
+                SUM(
+                    CASE 
+                        WHEN ih.inbound = true THEN ih.volume 
+                        WHEN ih.inbound = false THEN -ih.volume 
+                        ELSE 0 
+                    END
+                ) AS current_stock,
+                SUM(
+                    CASE 
+                        WHEN ih.inbound = true AND ih.volume < 0 THEN -ih.volume 
+                        ELSE 0 
+                    END
+                ) AS next_stock,
+                i.unitprice
+            FROM 
+                items i
+            INNER JOIN 
+                itemhistory ih ON i.id = ih.itemid
+            WHERE 
+                ih.agentid = $1
+                AND ih.createat BETWEEN $2 AND $3
+            GROUP BY 
+                i.id, i.name, i.unitprice;
+        `;
 
-        if (agent === 'All agents') {
-            data = await sql`
-        SELECT 
-          ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('month', ih.createat) DESC, ih.itemid) AS id,
-          ih.itemid,
-          i.name,
-          i.unitprice,
-          COALESCE(a.agent, 'Unknown') AS agent_name,
-          DATE_TRUNC('month', ih.createat) AS month,
-          ih.inbound,
-          SUM(ih.volume) AS total_volume
-        FROM 
-          itemhistory ih
-        LEFT JOIN 
-          agents a ON ih.agentid = a.id
-        LEFT JOIN
-          items i ON ih.itemid = i.id
-        WHERE 
-          ih.createat BETWEEN ${startDate} AND ${endDate}
-        GROUP BY 
-          ih.itemid,
-          i.name,
-          i.unitprice,
-          ih.agentid,
-          a.agent,
-          ih.inbound,
-          DATE_TRUNC('month', ih.createat)
-        ORDER BY 
-          month DESC, ih.itemid;
-      `;
-        } else {
-            data = await sql`
-        SELECT 
-          ROW_NUMBER() OVER (ORDER BY DATE_TRUNC('month', ih.createat) DESC, ih.itemid) AS id,
-          ih.itemid,
-          i.name,
-          i.unitprice,
-          COALESCE(a.agent, 'Unknown') AS agent_name,
-          DATE_TRUNC('month', ih.createat) AS month,
-          ih.inbound,
-          SUM(ih.volume) AS total_volume
-        FROM 
-          itemhistory ih
-        LEFT JOIN 
-          agents a ON ih.agentid = a.id
-        LEFT JOIN
-          items i ON ih.itemid = i.id
-        WHERE 
-          (a.agent = ${agent} OR (${agent} = 'No Agent' AND a.agent IS NULL))
-          AND ih.createat BETWEEN ${startDate} AND ${endDate}
-        GROUP BY 
-          ih.itemid,
-          i.name,
-          i.unitprice,
-          ih.agentid,
-          a.agent,
-          ih.inbound,
-          DATE_TRUNC('month', ih.createat)
-        ORDER BY 
-          month DESC, ih.itemid;
-      `;
-        }
-
-        return data.rows;
+        // Execute query
+        const { rows } = await sql.query(query, [agentId, startDate, endDate]);
+        return rows;
     } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch Items summary data.');
+        console.error("Database Error:", error);
+        throw new Error("Failed to fetch items summary data.");
     }
 }
+
 
 export async function fetchAgents(){
     try {
