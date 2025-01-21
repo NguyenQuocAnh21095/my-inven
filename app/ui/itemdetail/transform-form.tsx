@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { createItemHistory } from '@/app/lib/actions';
 import { Agent, Item } from '@/app/lib/definitions';
 import Link from "next/link";
+import { useSearchParams } from 'next/navigation';
 
 export default function TransForm({ agents, item }: { agents: Agent[], item: Item }) {
+    const searchParams = useSearchParams();
     const [agentid, setAgentid] = useState('');
     const [volume, setVolume] = useState('');
     const [createAtOld, setCreateAtOld] = useState('');
@@ -73,9 +75,17 @@ export default function TransForm({ agents, item }: { agents: Agent[], item: Ite
     // Tìm Agent hiện tại dựa trên selectedAgentId
     const currentAgent = agents.find((agent) => agent.id === agentid);
 
+    // Kiểm tra nếu queryParam 'summary=true'
+    const isSummary = searchParams.get('summary') === 'true';
+
     return (
         <div className="bg-gray-200 rounded-md p-4 text-black mt-2">
-            <Link className="text-blue-500" href={`/dashboard/${item.id}?agent=${currentAgent?.agent || ''}`}>Quay về</Link>
+            <Link
+                className="text-blue-500"
+                href={isSummary ? `/summary?agent=${currentAgent?.agent || ''}` : `/dashboard/${item.id}?agent=${currentAgent?.agent || ''}`}
+            >
+                Quay về
+            </Link>
             <div className="text-center p-2">
                 <div>
                     Bạn đang thực hiện chuyền tồn cho:
