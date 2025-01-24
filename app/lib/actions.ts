@@ -104,8 +104,8 @@ export async function UpdateFullItemHistoryById({
     curentVolume: number;
     historyId: string;
     volume: number;
-    agentId: string;
-    inbound:boolean;
+    agentId: string | null; // Cho phép giá trị null
+    inbound: boolean;
     outsup: boolean;
     createat: string;
 }) {
@@ -132,14 +132,19 @@ export async function UpdateFullItemHistoryById({
             SET agentid = $1, volume = $2, outsup = $3, createat = $4
             WHERE id = $5
         `,
-            [agentId, volume, outsup, createat, historyId] // Tham số hóa
+            [agentId, volume, outsup, createat, historyId] // Tham số hóa (cho phép null cho agentId)
         );
 
         // Commit transaction nếu không có lỗi
         await client.query('COMMIT');
+
+        // Revalidate đường dẫn tùy thuộc inbound
         if (inbound) {
             revalidatePath(`dashboard/${id}/${historyId}/edit-inhistory`);
-        } else {revalidatePath(`dashboard/${id}/${historyId}/edit-outhistory`);}
+        } else {
+            revalidatePath(`dashboard/${id}/${historyId}/edit-outhistory`);
+        }
+
         return {
             message: 'Item updated successfully!',
         };

@@ -19,7 +19,7 @@ export function ImportItem({ id }: { id: string}) {
             className="flex h-10 items-center rounded-lg bg-green-500 px-4 text-bold font-medium text-white transition-colors"
         >
             <span>Nhập Kho</span>
-            <PlusIcon className="h-5 md:ml-4" />
+            {/*<PlusIcon className="h-5 md:ml-4" />*/}
         </Link>
     );
 }
@@ -30,7 +30,7 @@ export function ImportAgentItem({ id }: { id: string}) {
             className="flex h-10 items-center rounded-lg bg-green-500 px-4 text-bold font-medium text-white transition-colors"
         >
             <span>Nhập Agent</span>
-            <PlusIcon className="h-5 md:ml-4" />
+            {/*<PlusIcon className="h-5 md:ml-4" />*/}
         </Link>
     );
 }
@@ -40,8 +40,8 @@ export function ExportItem({ id }: { id: string}) {
             href={`/dashboard/${id}/createagentexport`}
             className="flex h-10 items-center rounded-lg bg-red-500 px-4 text-bold font-medium text-white transition-colors"
         >
-            <span>Xuất</span>
-            <MinusIcon className="h-5 md:ml-4" />
+            <span>Xuất Agent</span>
+            {/*<MinusIcon className="h-5 md:ml-4" />*/}
         </Link>
     );
 }
@@ -52,7 +52,7 @@ export function TransformItem({ id }: { id: string}) {
             className="flex h-10 items-center rounded-lg bg-yellow-500 px-4 text-bold font-medium text-white transition-colors"
         >
             <span>Chuyển tồn</span>
-            <ArrowsUpDownIcon className="h-5 md:ml-4" />
+            {/*<ArrowsUpDownIcon className="h-5 md:ml-4" />*/}
         </Link>
     );
 }
@@ -131,4 +131,15 @@ export function NoActionButton() {
             <HandRaisedIcon className="w-5 text-gray-500"/>
         </div>
     )
+}
+
+export function EditInvenItemHistoryButton({ id, historyId }: { id: string, historyId: string }) {
+    return (
+        <Link
+            href={`/dashboard/${id}/${historyId}/edit-inventory-item`}
+            className="rounded-md border p-2 border-blue-500 text-blue-500 hover:bg-gray-100"
+        >
+            <PencilIcon className="w-5" />
+        </Link>
+    );
 }

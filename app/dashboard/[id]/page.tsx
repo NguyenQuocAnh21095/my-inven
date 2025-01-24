@@ -7,6 +7,7 @@ import {Skeleton} from "@/app/ui/skeleton";
 import {Suspense} from "react";
 import FilterMonthBar from "@/app/ui/dashboard/filtermonth-bar";
 import clsx from "clsx";
+import Link from "next/link";
 
 export default async function Page(props: {
     params: Promise<{ id: string }> ,
@@ -46,10 +47,15 @@ export default async function Page(props: {
     return (
         <div className="text-black text-center">
             <div>Tên: {item[0].name} - {item[0].unitprice.toLocaleString()}</div>
-            <div className={clsx("text-green-500 text-xl",{"text-red-500": item[0].currentvolume <= 3})}>KHO: {item[0].currentvolume}</div>
+            <Link
+                href={`/dashboard/${item[0].id}/inventory`}
+                className={clsx("text-green-500 text-xl",
+                {"text-red-500": item[0].currentvolume <= 3})}
+                >KHO: {item[0].currentvolume}
+            </Link>
             <ItemDetailHeader id={id} agentId={agent} startDate={startDate} endDate={endDate} />
             <FilterMonthBar/>
-            <div className="flex justify-between gap-2 my-2 max-w-[100vh] overflow-x-auto">
+            <div className="flex justify-between gap-1 my-1">
                 <ImportItem id={id}/>
                 <ImportAgentItem id={id}/>
                 <TransformItem id={id}/>

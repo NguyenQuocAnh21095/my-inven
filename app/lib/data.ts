@@ -299,3 +299,46 @@ export async function fetchSumExportByItemAgent(itemid: string, agentid: string)
     }
 }
 
+export async function fetchInventory(startDate: string, endDate: string){
+    try {
+        const data = await sql`
+          SELECT 
+                i.id, 
+                COALESCE(a.agent, 'No Agent') AS agent,
+                i.volume,
+                i.createat 
+            FROM 
+                itemhistory i
+            LEFT JOIN 
+                agents a 
+            ON 
+                a.id = i.agentid
+            WHERE 
+                i.inbound = true
+                AND i.createat BETWEEN ${startDate} AND ${endDate}
+            ORDER BY createat DESC
+        `;
+        return data.rows;
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to fetch inventory items');
+    }
+}
+
+export async function fetchTotalInOutInventoryByItemId(id:string){
+    try {
+        const data = await sql`
+        SELECT 
+            SUM(CASE WHEN inbound = true AND agentid IS NULL THEN volume ELSE 0 END) AS total_in,
+            SUM(CASE WHEN inbound = true AND agentid IS NOT NULL THEN volume ELSE 0 END) AS total_out
+        FROM 
+            itemhistory
+        where itemid = ${id}`;
+        const total_in = Number(data.rows[0].total_in ?? '0')
+        const total_out = Number(data.rows[0].total_out ?? '0')
+        return {total_in,total_out};
+    } catch (err) {
+        console.error('Database Error:', err);
+        throw new Error('Failed to fetch fetchTotalInOutInventoryByItemId');
+    }
+}
