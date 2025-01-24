@@ -1,6 +1,6 @@
 'use client';
 
-import { Agent, Item, ItemHistory } from '@/app/lib/definitions';
+import { Item, ItemHistory } from '@/app/lib/definitions';
 import { useState } from 'react';
 import {UpdateFullItemHistoryById} from "@/app/lib/actions";
 import Link from "next/link";
@@ -67,8 +67,6 @@ export default function EditInvenItemHistoryForm({
             // Gọi API cập nhật
             const result = await UpdateFullItemHistoryById(iData);
             console.log('Result:', result);
-
-            setMessage('Cập nhật thành công!');
             alert('Cập nhật thành công!');
         } catch (error) {
             setMessage('Cập nhật thất bại!');

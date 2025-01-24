@@ -1,6 +1,5 @@
-import {fetchAgents, fetchItemById, fetchItemHistoryById, fetchTotalInOutInventoryByItemId} from "@/app/lib/data";
-import {Agent, Item, ItemHistory} from "@/app/lib/definitions";
-import EditItemHistoryInForm from "@/app/ui/itemdetail/edit-itemhistory-inform";
+import {fetchItemById, fetchItemHistoryById, fetchTotalInOutInventoryByItemId} from "@/app/lib/data";
+import {Item, ItemHistory} from "@/app/lib/definitions";
 import EditInvenItemHistoryForm from "@/app/ui/itemdetail/edit-invenitemhistory-form";
 
 export default async function Page(props: {
