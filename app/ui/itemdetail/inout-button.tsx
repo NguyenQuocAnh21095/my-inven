@@ -122,9 +122,9 @@ export function DeleteItemHistoryButton({item, historyId, inbound, newVolume}: {
 export function NoActionButton() {
     return (
         <div
-            className="rounded-md border p-2 border-gray-500"
+            className="rounded-md border p-1 border-gray-500"
         >
-            <span className="sr-only">No Action</span>
+            {/*<span className="sr-only">No Action</span> Cái sr-only này gây ra lỗi màn hình đen*/}
             <HandRaisedIcon className="w-5 text-gray-500"/>
         </div>
     )
@@ -134,7 +134,7 @@ export function EditInvenItemHistoryButton({ id, historyId }: { id: string, hist
     return (
         <Link
             href={`/dashboard/${id}/${historyId}/edit-inventory-item`}
-            className="rounded-md border p-2 border-blue-500 text-blue-500 hover:bg-gray-100"
+            className="rounded-md border p-1 border-blue-500 text-blue-500 hover:bg-gray-100"
         >
             <PencilIcon className="w-5" />
         </Link>

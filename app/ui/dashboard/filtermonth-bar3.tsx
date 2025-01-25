@@ -47,9 +47,9 @@ export default function FiltermonthBar3() {
     }, [startDate, endDate, pathname, searchParams, replace]);
 
     return (
-        <div className="flex flex-1 justify-center items-center bg-green-500 rounded-md py-[9px] px-2 text-black">
+        <div className="flex flex-1 justify-center items-center bg-green-500 p-1 mt-1 rounded-md text-black">
             <DatePicker
-                className="rounded-md h-7 max-w-[170px]"
+                className="rounded-md h-8 max-w-[170px]"
                 selectsRange
                 startDate={startDate}
                 endDate={endDate}

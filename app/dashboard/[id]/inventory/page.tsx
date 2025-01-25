@@ -45,16 +45,16 @@ export default async function Page(props: {
     const endDate = searchParams?.endDate || defaultEndDate;
 
     return (
-        <div className="text-black">
+        <div className="w-full text-black">
             <div className="flex w-full items-center justify-between">
-                <h1 className="text-2xl">Tổng quan kho tổng</h1>
+                <h1 className="text-xl">Tổng quan kho tổng</h1>
             </div>
             <Link href={`/dashboard/${id}`}
-                  className="text-blue-500">
+                  className="flex text-blue-500">
                 Quay về
             </Link>
-            <div className="text-center">Vật phẩm: {item.name}</div>
-            <div className="mt-2 flex items-center justify-between gap-2 md:mt-8">
+            <div className="text-center rounded-md bg-gray-200">Vật phẩm: {item.name}</div>
+            <div className="flex items-center justify-between md:mt-8">
                 <FiltermonthBar3 />
             </div>
             <Suspense key={startDate} fallback={<Skeleton />}>

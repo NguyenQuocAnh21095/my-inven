@@ -7,16 +7,16 @@ import MienLogo from "@/app/ui/mien-logo";
 
 export default function SideNav() {
     return (
-        <div className="flex h-full flex-col px-3 py-4 md:px-2">
+        <div className="flex h-full flex-col md:px-2">
             <Link
-                className="mb-2 flex h-15 items-center justify-start rounded-md bg-green-600 p-2 md:h-40"
+                className="p-1 flex items-center justify-start bg-green-600 md:h-40"
                 href="/dashboard"
             >
                 <div className="text-white md:w-40">
                     <MienLogo/>
                 </div>
             </Link>
-            <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+            <div className="flex p-1 grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
                 <NavLinks />
                 <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
                 {/*<form*/}

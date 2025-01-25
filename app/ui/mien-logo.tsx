@@ -5,12 +5,12 @@ export default function MienLogo() {
         <div className="flex flex-row items-center leading-none text-white">
             <Image
                 src="/logo.png"
-                className="h-12 w-12 rounded-md mr-2"
-                width={48}
-                height={48}
+                className="h-[40px] w-[40px] rounded-md mr-2"
+                width={40}
+                height={40}
                 alt="No logo"
             />
-            <p className="text-[44px]">Miên laundry</p>
+            <p className="text-[24px]">Hiệu giặt thơm</p>
         </div>
     );
 }

@@ -10,7 +10,7 @@ export default function DashboardLayout({
             <div className="w-full flex-none md:w-64">
                 <SideNav/>
             </div>
-            <div className="flex-grow px-3 md:overflow-y-auto md:p-12">{children}</div>
+            <div className="flex-grow px-2 md:overflow-y-auto md:p-12">{children}</div>
         </div>
     );
 }

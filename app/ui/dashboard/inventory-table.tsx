@@ -15,14 +15,14 @@ export default async function InventoryTable({
     const items = await fetchInventory(startDate, endDate);
 
     return (
-        <div className="mt-3 flow-root">
+        <div className="mt-1 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg bg-gray-100 p-2 md:pt-0">
-                    <div className="max-h-[50vh] overflow-y-auto pt-2">
+                <div className="rounded-lg bg-gray-100 p-1 md:pt-0">
+                    <div className="max-h-[55vh] overflow-y-auto space-y-1">
                         {items?.map((item) => (
                             <div
                                   key={item.id}
-                                  className="mb-2 w-full rounded-md p-4 flex bg-white justify-between text-black items-center gap-1
+                                  className="p-2 w-full rounded-md flex bg-white justify-between text-black items-center
                                   "
                             >
                                 <strong className={`min-w-[50px] ${item.agent === 'No Agent' ? 'text-green-500' : 'text-red-500'}`}>
@@ -31,13 +31,10 @@ export default async function InventoryTable({
                                 <div className="min-w-[70px]">
                                     {item.agent}
                                 </div>
-                                {/*<div className="min-w-[50px]">*/}
-                                {/*    SL: {item.volume}*/}
-                                {/*</div>*/}
                                 <div>
                                     {formatDateToLocal(item.createat)}
                                 </div>
-                                {item.agent === 'No Agent' ?<EditInvenItemHistoryButton id={id} historyId={item.id}/>:<NoActionButton/>}
+                                    {item.agent === 'No Agent' ? <EditInvenItemHistoryButton id={id} historyId={item.id}/> : <NoActionButton/>}
                             </div>
                         ))}
                     </div>
